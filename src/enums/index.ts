@@ -18,4 +18,10 @@ export enum messageClassifyEnums {
   add = 'add',
   // 删除
   delete = 'delete',
+  // 修改
+  edit = 'edit',
+  // 查找
+  search = 'search',
+  // 重置
+  reset = 'reset',
 }

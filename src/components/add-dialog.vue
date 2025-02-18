@@ -3,6 +3,8 @@
     :title="title"
     width="55%"
     @close="close"
+    :close-on-click-modal="type !== dialogStateEnums.edit"
+    :show-close="type !== dialogStateEnums.edit"
   >
     <el-form
       ref="formRef"
@@ -67,10 +69,10 @@
         </el-col>
         <el-col :span="2"></el-col>
         <el-col :span="11">
-          <el-form-item label="员工工号" prop="staffId">
+          <el-form-item label="员工姓名" prop="staffId">
             <el-input
               v-model="info.staffId"
-              placeholder="请输入员工工号"
+              placeholder="请输入员工姓名"
             ></el-input>
           </el-form-item>
         </el-col>
@@ -121,6 +123,7 @@
         <el-button v-if="type === dialogStateEnums.add" type="primary" @click="add">
           新增
         </el-button>
+        <el-button v-if="type === dialogStateEnums.edit" type="primary" @click="edit">确定</el-button>
         <el-button v-if="type === dialogStateEnums.view" type="primary" @click="close">确定</el-button>
       </div>
     </template>
@@ -167,7 +170,21 @@ const info = ref<employeeListType>({
   // 员工意见
   staffSuggest: '',
   // 日期
-  date: ''
+  date: '',
+  // 审批状态
+  state: '',
+  // 批量提交是否检查
+  batchChecked: false,
+  // 催办状态
+  remind: '',
+  // 日志进程状态
+  process: '',
+  // 提交时间
+  submitDate: '',
+  // 审批时间
+  approvalDate: '',
+  // 确认（结束）时间
+  confirmDate: ''
 })
 const title = ref<string>('')
 // 定义仓库
@@ -177,6 +194,21 @@ const globalStore = globalSideStore()
 const formRef = ref()
 const close = () => {
   emit('close')
+}
+const edit = () => {
+  // 表单验证
+  formRef.value.validate((valid: any) => {
+    if (valid) {
+      // 消息类型设置为edit
+      globalStore.setMessageClassify('edit')
+      window.location.reload() // 刷新当前页面
+      // 关闭弹窗
+      emit('close')
+    } else {
+      console.log('表单验证失败')
+      return false
+    }
+  })
 }
 /**
  * 新增日志
@@ -195,6 +227,14 @@ const add = () => {
       info.value.envTemperature = info.value.envTemperature + '℃'
       // 光照强度单位补充
       info.value.lightIntensity = info.value.lightIntensity + 'Lux'
+      // 审批状态设定
+      info.value.state = '未提交'
+      // 催办状态初始值设定
+      info.value.remind = '未催办'
+      // 批量提交检查初始值
+      info.value.batchChecked = false
+      // 日志进程状态初始值
+      info.value.process = '已新建'
       // 仓库增加处理
       employeeStore.addEmployeeList(info.value)
       // 消息类型设置为add
@@ -205,11 +245,6 @@ const add = () => {
       console.log('表单验证失败')
       return false
     }
-  })
-}
-const validate = () => {
-  formRef.value.validate((valid: any) => {
-    return !!valid
   })
 }
 /**

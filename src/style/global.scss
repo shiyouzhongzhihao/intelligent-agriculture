@@ -1,10 +1,68 @@
+// 错误
 .danger {
-  color: red;
+  color: #F56C6C!important;
 }
+// 可点击
+.primary {
+  color:#409EFF!important;
+}
+// 警告
+.warning {
+  color: #E6A23C!important;
+}
+// 成功
+.success {
+  color: #67C23A!important;
+}
+// 默认文字样式
+.font-style {
+  color: #606266;
+  font-size: 14px;
+}
+// 右靠格式
 .location-right {
   display: flex;
   justify-content: flex-end;
 }
+// 垂直对齐
+.location-align {
+  display: flex;
+  align-items: center;
+}
+// 默认文字大小
 .default-font-size {
   font-size: 14px;
+}
+// 默认文字颜色
+.font-color {
+  color: #606266;
+}
+// 进度-未提交
+.process-no-submit {
+  color: #F56C6C;
+}
+// 进度-待审批
+.process-wait-audit {
+  color: #409EFF;
+}
+// 进度-已审批
+.process-success {
+  color: #67C23A;
+}
+// 占位
+.block {
+  height: 15px;
+  width: 15px;
+}
+// 左间距小
+.left-margin-min {
+  margin-left: 5px;
+}
+// 左间距中
+.left-margin-mid {
+  margin-left: 10px;
+}
+// 右间距中
+.right-margin-mid {
+  margin-right: 10px;
 }
