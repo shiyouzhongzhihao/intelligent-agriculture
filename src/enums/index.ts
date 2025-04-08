@@ -24,4 +24,6 @@ export enum messageClassifyEnums {
   search = 'search',
   // 重置
   reset = 'reset',
+  // 注册
+  register = 'register',
 }

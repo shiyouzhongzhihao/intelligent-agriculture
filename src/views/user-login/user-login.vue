@@ -1,25 +1,20 @@
 <template>
-  <div class="body">
-    <el-button type="success" @click="router.push('/employeePage')">员工端</el-button>
-    <el-button type="success" @click="router.push('/managerPage')">管理端</el-button>
+  <div class="common-layout">
+    <el-container>
+      <el-header style="height:8vh;">
+        <user-login-header></user-login-header>
+      </el-header>
+      <el-main style="padding: 0">
+        <user-login-body></user-login-body>
+      </el-main>
+    </el-container>
   </div>
 </template>
 
 <script setup lang="ts">
-import router from '@/router'
+import UserLoginBody from '@/views/user-login/user-login-body.vue'
+import UserLoginHeader from '@/views/user-login/user-login-header.vue'
 </script>
 
 <style scoped lang="scss">
-:global(html), :global(body) {
-  height: 100%;
-  margin: 0;
-}
-.body {
-  height: 100vh; /* 使用视口高度填满页面 */
-  margin: 0; /* 移除默认边距 */
-  background-image: url('@/assets/wallhaven-m3xowk.jpg');
-  background-size: cover; /* 背景图像覆盖整个容器 */
-  background-position: center; /* 背景图像居中 */
-  background-repeat: no-repeat; /* 不重复背景图像 */
-}
 </style>

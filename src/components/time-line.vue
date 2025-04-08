@@ -112,7 +112,7 @@ watch([
     lineStateThree.value.type = 'success'
     lineStateThree.value.icon = Check
     lineStateThree.value.content = '日志已审批'
-    lineStateThree.value.timestamp = `审批时间：${props.employeeDetail?.approvalDate} 来源：管理部-：`
+    lineStateThree.value.timestamp = `审批时间：${props.employeeDetail?.approvalDate} 来源：管理部-${props.employeeDetail?.approvalManager}`
     lineStateFour.value.type = 'primary'
     lineStateFour.value.icon = MoreFilled
     lineStateFour.value.content = '审批结果未确认'
@@ -127,11 +127,11 @@ watch([
     lineStateThree.value.type = 'success'
     lineStateThree.value.icon = Check
     lineStateThree.value.content = '日志已审批'
-    lineStateThree.value.timestamp = `审批时间：${props.employeeDetail?.approvalDate} 来源：管理部-`
+    lineStateThree.value.timestamp = `审批时间：${props.employeeDetail?.approvalDate} 来源：管理部-${props.employeeDetail?.approvalManager}`
     lineStateFour.value.type = 'success'
     lineStateFour.value.icon = Check
     lineStateFour.value.content = '审批结果已确认'
-    lineStateFour.value.timestamp = `确认时间：${props.employeeDetail?.confirmDate} 来源：员工-${props.employeeDetail?.staffId}`
+    lineStateFour.value.timestamp = `确认时间：${props.employeeDetail?.confirmDate} 来源：员工-${props.employeeDetail?.confirmEmployee}`
     lineStateFive.value.type = 'success'
     lineStateFive.value.icon = Check
     lineStateFive.value.timestamp = `结束时间：${props.employeeDetail?.confirmDate}`
@@ -139,7 +139,7 @@ watch([
   activities.value = [
     {
       content: '新建日志',
-      timestamp: `创建时间：${props.employeeDetail?.date} 来源：员工-${props.employeeDetail?.staffId}`,
+      timestamp: `创建时间：${props.employeeDetail?.date} 来源：员工-${props.employeeDetail?.createEmployee}`,
       size: 'large',
       type: 'success',
       icon: Check
@@ -147,7 +147,7 @@ watch([
     {
       content: lineStateTwo.value.content,
       type: lineStateTwo.value.type,
-      timestamp: lineStateTwo.value.type === 'success' ? `提交时间：${props.employeeDetail?.submitDate} 来源：员工-${props.employeeDetail?.staffId}` : '请提交日志',
+      timestamp: lineStateTwo.value.type === 'success' ? `提交时间：${props.employeeDetail?.submitDate} 来源：员工-${props.employeeDetail?.submitEmployee}` : '请提交日志',
       size: 'large',
       icon: lineStateTwo.value.icon
     },

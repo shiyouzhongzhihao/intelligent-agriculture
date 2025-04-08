@@ -6,7 +6,7 @@ export interface employeeListType {
   airWetness: string;
   envTemperature: string;
   lightIntensity: string;
-  staffId: string;
+  staffId: string | undefined;
   diaryTitle: string;
   dataExplain: string;
   staffSuggest: string;
@@ -18,6 +18,12 @@ export interface employeeListType {
   submitDate: string;
   approvalDate: string;
   confirmDate: string;
+  createEmployee?: string;
+  submitEmployee?: string;
+  confirmEmployee?: string;
+  approvalManager?: string;
+  isEnv?: boolean;
+  monitorDate?: string;
 }
 // 搜索
 export type searchType = {
@@ -33,4 +39,36 @@ export interface processType {
   icon: any;
   type: any;
   timestamp?: string;
+}
+// 公共信息
+export interface userType {
+  username: string;
+  password: string;
+  email?: string;
+  name?: string;
+  type?: string;
+  code?: number | null;
+  address?: string;
+  phone?: string;
+  read?: boolean;
+  avatar?: string;
+}
+// 环境数据
+export interface envType {
+  airWetness: string;
+  envTemperature: string;
+  lightIntensity: string;
+  date: string;
+}
+// 邮箱数据
+export interface emailType {
+  username: string | undefined;
+  name: string | undefined;
+  text: string;
+  type: string | undefined;
+  date: string;
+  sendPerson: userType[];
+  title: string | undefined;
+  email: string | undefined;
+  avatar: string | undefined;
 }

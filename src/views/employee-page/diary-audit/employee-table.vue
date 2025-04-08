@@ -20,6 +20,7 @@
       v-model="dialogState"
       :employeeDetail="employeeDetail"
       :type="type"
+      :is-env="isEnv"
       @close="closeDialog"
     />
     <batch-submit-dialog
@@ -50,7 +51,7 @@
           <span v-else class="danger">危险提醒</span>
         </template>
       </el-table-column>
-      <el-table-column prop="date" label="日期" width="120" />
+      <el-table-column prop="date" label="创建日期" width="120" />
       <el-table-column prop="lightIntensity" label="光照强度" width="100" />
       <el-table-column prop="envTemperature" label="环境温度" width="100" />
       <el-table-column prop="airWetness" label="空气湿度" width="100" />
@@ -161,7 +162,8 @@ const isSearch = ref<boolean>(false)
 // 多选框数组
 const selectList = ref<employeeListType[]>([])
 const selectable = (row: employeeListType) => ['未提交'].includes(row.state)
-
+// 是否环境
+const isEnv = ref<boolean>(false)
 /**
  * 关闭弹窗
  */
@@ -188,9 +190,11 @@ const addDiary = () => {
  * @param row 单行数据
  */
 const editDiary = (row:employeeListType) => {
+  console.log(row.isEnv)
   type.value = 'edit'
   dialogState.value = true
   employeeDetail.value = row
+  isEnv.value = row.isEnv as boolean
   addDialogRef.value.getEmployeeDetail(row.diaryToken)
 }
 /**
@@ -198,6 +202,7 @@ const editDiary = (row:employeeListType) => {
  * @param row 单行数据
  */
 const inputDiary = (row:employeeListType) => {
+  row.submitEmployee = globalStore.currentEmployee?.name
   row.submitDate = completeTime
   row.state = '待审批'
   row.process = '已提交'
@@ -223,6 +228,7 @@ const deleteDiary = (row:employeeListType) => {
  */
 const confirm = (row:employeeListType) => {
   console.log(row)
+  row.confirmEmployee = globalStore.currentEmployee?.name
   row.confirmDate = completeTime
   row.process = '已确认'
   window.location.reload() // 刷新当前页面
@@ -265,8 +271,10 @@ const remind = (row:employeeListType) => {
  */
 const viewDetail = (row:employeeListType) => {
   type.value = 'view'
+  isEnv.value = row.isEnv as boolean
   dialogState.value = true
   employeeDetail.value = row
+  console.log(employeeDetail.value)
   addDialogRef.value.getEmployeeDetail(row.diaryToken)
 }
 /**

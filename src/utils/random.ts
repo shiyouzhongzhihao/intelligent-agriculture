@@ -7,3 +7,11 @@ export const setRandom = () => {
   }
   return uniqueId
 }
+// 随机环境数据，记得删除
+export const randomEnvData = () => {
+  const airWetness = (Math.random() * 100).toFixed(2)
+  const envTemperature = (Math.random() * 45).toFixed(2)
+  const lightIntensity = (Math.random() * 120000).toFixed(2)
+
+  return { airWetness, envTemperature, lightIntensity }
+}

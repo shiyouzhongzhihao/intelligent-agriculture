@@ -45,7 +45,9 @@ import { employeeSideStore } from '@/store/employee-side-data'
 import { onMounted, ref } from 'vue'
 import { employeeListType } from '@/type'
 import { completeTime } from '@/utils/time'
+import { globalSideStore } from '@/store/global-data'
 
+const globalStore = globalSideStore()
 const employeeStore = employeeSideStore()
 const managerList = ref()
 /**
@@ -55,6 +57,7 @@ const approval = (row:employeeListType) => {
   console.log(row)
   row.process = '已审批'
   row.state = '已审批'
+  row.approvalManager = globalStore.currentManager?.name
   row.approvalDate = completeTime
   window.location.reload() // 刷新当前页面
 }
@@ -76,7 +79,7 @@ onMounted(() => {
   // managerList.value = employeeStore.employeeList.filter(item => item.state !== '未提交')
   managerList.value = employeeStore.employeeList
     .filter(item => item.state !== '未提交') // 筛选状态
-    .sort((a, b) => new Date(a.submitDate).getTime() - new Date(b.submitDate).getTime())
+    .sort((a, b) => new Date(b.submitDate).getTime() - new Date(a.submitDate).getTime())
 })
 </script>
 

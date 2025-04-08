@@ -39,7 +39,7 @@ export const employeeSideStore = defineStore('employee-side-data', () => {
       employee.diaryId.toLowerCase().includes(employeeToSearch.diaryId.toLowerCase())
     )
     result = result.filter((employee) =>
-      employee.staffId.toLowerCase().includes(employeeToSearch.staffId.toLowerCase())
+      employee.staffId?.toLowerCase().includes(employeeToSearch.staffId.toLowerCase())
     )
     result = result.filter((employee) =>
       employee.diaryClassify.toLowerCase().includes(employeeToSearch.diaryClassify.toLowerCase())

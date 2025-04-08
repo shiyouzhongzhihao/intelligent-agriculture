@@ -6,6 +6,7 @@
     :close-on-click-modal="type !== dialogStateEnums.edit"
     :show-close="type !== dialogStateEnums.edit"
   >
+    <el-text v-if="isEnv && (type !== 'add')">数据监测时间：{{employeeDetail.monitorDate}}</el-text>
     <el-form
       ref="formRef"
       :model="info"
@@ -13,6 +14,7 @@
       :show-message="type !== dialogStateEnums.view"
       :hide-required-asterisk="type === dialogStateEnums.view"
       :disabled="type === dialogStateEnums.view"
+      style="margin-top: 5px"
     >
       <el-row>
         <el-col :span="11">
@@ -37,22 +39,36 @@
         <el-col :span="11">
           <el-form-item label="空气湿度" prop="airWetness">
             <el-input
+              v-if="!isEnv"
               v-model="info.airWetness"
               placeholder="请输入空气湿度"
             >
               <template #append v-if="type === dialogStateEnums.add">%</template>
             </el-input>
+            <el-input
+              disabled
+              v-else
+              v-model="envStore.currentAddDiary.airWetness"
+              placeholder="请输入"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="2"></el-col>
         <el-col :span="11">
           <el-form-item label="环境温度" prop="envTemperature">
             <el-input
+              v-if="!isEnv"
               v-model="info.envTemperature"
               placeholder="请输入环境温度"
             >
               <template #append v-if="type === dialogStateEnums.add">℃</template>
             </el-input>
+            <el-input
+              disabled
+              v-else
+              v-model="envStore.currentAddDiary.envTemperature"
+              placeholder="请输入"
+            />
           </el-form-item>
         </el-col>
       </el-row>
@@ -60,19 +76,27 @@
         <el-col :span="11">
           <el-form-item label="光照强度" prop="lightIntensity">
             <el-input
+              v-if="!isEnv"
               v-model="info.lightIntensity"
               placeholder="请输入光照强度"
             >
               <template #append v-if="type === dialogStateEnums.add">Lux</template>
             </el-input>
+            <el-input
+              disabled
+              v-else
+              v-model="envStore.currentAddDiary.lightIntensity"
+              placeholder="请输入"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="2"></el-col>
         <el-col :span="11">
-          <el-form-item label="员工姓名" prop="staffId">
+          <el-form-item label="员工姓名">
             <el-input
-              v-model="info.staffId"
-              placeholder="请输入员工姓名"
+              v-model="globalStore.currentEmployee.name"
+              placeholder="暂无有效数据"
+              :disabled="true"
             ></el-input>
           </el-form-item>
         </el-col>
@@ -139,11 +163,19 @@ import rules from '@/utils/rules'
 import { employeeListType } from '@/type'
 import { dialogStateEnums } from '@/enums'
 import { globalSideStore } from '@/store/global-data'
+import { envSideStore } from '@/store/env-side-data'
 
 const props = defineProps({
   type: {
     type: String,
     default: ''
+  },
+  isEnv: {
+    type: Boolean,
+    default: false
+  },
+  employeeDetail: {
+    type: Object
   }
 })
 const emit = defineEmits(['close'])
@@ -184,13 +216,26 @@ const info = ref<employeeListType>({
   // 审批时间
   approvalDate: '',
   // 确认（结束）时间
-  confirmDate: ''
+  confirmDate: '',
+  // 新建员工
+  createEmployee: '',
+  // 提交员工
+  submitEmployee: '',
+  // 确认员工
+  confirmEmployee: '',
+  // 是否为env数据
+  isEnv: false,
+  // 环境env监测日期
+  monitorDate: ''
 })
 const title = ref<string>('')
 // 定义仓库
 const employeeStore = employeeSideStore()
 // 公共仓库
 const globalStore = globalSideStore()
+// 环境仓库
+const envStore = envSideStore()
+const dialogMonitorDate = ref()
 const formRef = ref()
 const close = () => {
   emit('close')
@@ -214,6 +259,12 @@ const edit = () => {
  * 新增日志
  */
 const add = () => {
+  // 设置env模式的初始值
+  if (props.isEnv) {
+    info.value.airWetness = 'default'
+    info.value.lightIntensity = 'default'
+    info.value.envTemperature = 'default'
+  }
   // 表单验证
   formRef.value.validate((valid: any) => {
     if (valid) {
@@ -221,12 +272,29 @@ const add = () => {
       // 传入当前的时间和随机生成的唯一token
       info.value.date = completeTime
       info.value.diaryToken = setRandom()
-      // 空气湿度单位补充
-      info.value.airWetness = info.value.airWetness + '%'
-      // 环境温度单位补充
-      info.value.envTemperature = info.value.envTemperature + '℃'
-      // 光照强度单位补充
-      info.value.lightIntensity = info.value.lightIntensity + 'Lux'
+      // 员工姓名补充
+      info.value.staffId = globalStore.currentEmployee?.name
+      if (!props.isEnv) {
+        // 空气湿度单位补充
+        info.value.airWetness = info.value.airWetness + '%'
+        // 环境温度单位补充
+        info.value.envTemperature = info.value.envTemperature + '℃'
+        // 光照强度单位补充
+        info.value.lightIntensity = info.value.lightIntensity + 'Lux'
+        // 设置为env数据
+        info.value.isEnv = false
+      } else {
+        // 空气湿度
+        info.value.airWetness = envStore.currentAddDiary?.airWetness as string
+        // 环境温度
+        info.value.envTemperature = envStore.currentAddDiary?.envTemperature as string
+        // 光照强度
+        info.value.lightIntensity = envStore.currentAddDiary?.lightIntensity as string
+        // 设置为env数据
+        info.value.isEnv = true
+        // env环境监测日期
+        info.value.monitorDate = envStore.currentAddDiary?.date
+      }
       // 审批状态设定
       info.value.state = '未提交'
       // 催办状态初始值设定
@@ -235,6 +303,8 @@ const add = () => {
       info.value.batchChecked = false
       // 日志进程状态初始值
       info.value.process = '已新建'
+      // 新建员工设置
+      info.value.createEmployee = globalStore.currentEmployee?.name
       // 仓库增加处理
       employeeStore.addEmployeeList(info.value)
       // 消息类型设置为add
@@ -261,7 +331,12 @@ watch(() => props.type, (newVal) => {
     title.value = '查看日志'
   } else if (newVal === 'edit') {
     title.value = '修改日志'
+  } else {
+    title.value = '新增日志'
   }
+})
+watch(() => props.employeeDetail?.monitorDate, (newVal) => {
+  dialogMonitorDate.value = newVal
 })
 defineExpose({
   getEmployeeDetail,

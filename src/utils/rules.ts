@@ -15,9 +15,6 @@ const rules = {
   lightIntensity: [
     { required: true, message: '请输入光照强度', trigger: 'blur' }
   ],
-  staffId: [
-    { required: true, message: '请输入员工工号', trigger: 'blur' }
-  ],
   diaryTitle: [
     { required: true, message: '请输入日志标题', trigger: 'blur' }
   ],
