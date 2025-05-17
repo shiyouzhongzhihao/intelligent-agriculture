@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { envType } from '@/type'
+import { employeeListType, envType } from '@/type'
 
 // 设置仓库名 env-side-data
 export const envSideStore = defineStore('env-data', () => {
@@ -18,6 +18,17 @@ export const envSideStore = defineStore('env-data', () => {
    */
   const addEnvDataList = (newEnvData:envType) => {
     envDataList.value.unshift(newEnvData)
+    window.location.reload() // 刷新当前页面
+  }
+  /**
+   * 删除环境数据
+   * @param employeeToDelete
+   */
+  const deleteEnvDataList = (employeeToDelete: employeeListType) => {
+    envDataList.value = envDataList.value.filter((employee: any) => {
+      // 根据需要的条件判断是否保留该对象
+      return employee.diaryToken !== employeeToDelete.diaryToken
+    })
     window.location.reload() // 刷新当前页面
   }
   /**
@@ -47,7 +58,8 @@ export const envSideStore = defineStore('env-data', () => {
     setEnvNumber,
     envNumber,
     setCurrentAddDiary,
-    currentAddDiary
+    currentAddDiary,
+    deleteEnvDataList
   }
 }, {
 // 持久化设置

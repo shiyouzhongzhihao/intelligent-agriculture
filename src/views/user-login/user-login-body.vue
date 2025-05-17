@@ -1,7 +1,11 @@
 <template>
   <div class="body">
     <div class="content">
-      <div class="background" :class="{ 'special-height': globalStore.loginClassify === 'register' }"></div>
+      <div class="background" :class="{ 'special-height': globalStore.loginClassify === 'register' }">
+        <div style="color: #404040;font-size: 22px;margin-top: 80px;z-index: 100">只需一个管理系统账号</div>
+        <div style="color: #404040;font-size: 15px;z-index: 100">即可实时掌握环境数据动态</div>
+        <img src="@/assets/pic.png" alt="" style="margin-top: -70px;margin-left: 50px;width: 300px;opacity: 50%">
+      </div>
       <user-login-body-login v-if="globalStore.loginClassify !== 'register' && !globalStore.isLogin"></user-login-body-login>
       <user-login-body-register v-if="globalStore.loginClassify === 'register' &&!globalStore.isRegister"></user-login-body-register>
       <user-login-body-result v-if="globalStore.isLogin"></user-login-body-result>

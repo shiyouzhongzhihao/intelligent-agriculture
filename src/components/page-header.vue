@@ -5,7 +5,7 @@
         <el-avatar
           class="mr-3"
           :size="32"
-          :src="globalStore.currentEmployee.avatar"
+          :src="type === 'employee'? globalStore.currentEmployee.avatar : globalStore.currentManager.avatar"
         />
         <span class="text-large font-600 mr-3"> 姓名： </span>
         <span
@@ -27,6 +27,7 @@
   </el-page-header>
   <user-email
     v-model="emailDialog"
+    :type="props.type"
   />
 </template>
 
@@ -50,6 +51,7 @@ const openEmail = () => {
   emailDialog.value = true
 }
 const exit = () => {
+  globalStore.setLoginClassify('register')
   router.push('/')
 }
 // 公共仓库

@@ -80,7 +80,7 @@
               v-model="info.lightIntensity"
               placeholder="请输入光照强度"
             >
-              <template #append v-if="type === dialogStateEnums.add">Lux</template>
+              <template #append v-if="type === dialogStateEnums.add">%</template>
             </el-input>
             <el-input
               disabled
@@ -280,7 +280,7 @@ const add = () => {
         // 环境温度单位补充
         info.value.envTemperature = info.value.envTemperature + '℃'
         // 光照强度单位补充
-        info.value.lightIntensity = info.value.lightIntensity + 'Lux'
+        info.value.lightIntensity = info.value.lightIntensity + '%'
         // 设置为env数据
         info.value.isEnv = false
       } else {
@@ -307,6 +307,8 @@ const add = () => {
       info.value.createEmployee = globalStore.currentEmployee?.name
       // 仓库增加处理
       employeeStore.addEmployeeList(info.value)
+      // -----测试-----
+      envStore.addEnvDataList(info.value)
       // 消息类型设置为add
       globalStore.setMessageClassify('add')
       // 关闭弹窗

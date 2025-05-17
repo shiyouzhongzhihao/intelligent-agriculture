@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-input placeholder="输入头像链接" v-model="avatar" style="width: 400px"></el-input>
-    <el-button @click="changeAvatar">修改</el-button>
+    <el-button @click="changeAvatar" style="margin-left: 10px">修改</el-button>
   </div>
 </template>
 <script setup lang="ts">

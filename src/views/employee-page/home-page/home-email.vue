@@ -2,24 +2,57 @@
   <div>
     <div class="body">
       <el-scrollbar height="300px">
-        <el-card v-for="item in 5" :key="item" style="margin: 5px 0 " shadow="hover">
+        <el-card v-for="item in myEmail" :key="item" style="margin: 5px 0 " shadow="hover">
           <div style="display: flex;justify-content: space-between;">
             <div>
-              <div>邮件名：<el-tag type="success">已读</el-tag></div>
-              <div style="font-size: 12px;color: #606266">发件人：</div>
-              <div style="font-size: 12px;color: #606266">时间：</div>
+              <div class="primary">邮件名：{{item.title}}</div>
+              <div style="font-size: 12px;color: #606266">发件人：{{item.name}}</div>
+              <div style="font-size: 12px;color: #606266">时间：{{item.date}}</div>
             </div>
             <div>
-              <el-button type="primary">查看邮件</el-button>
+              <!--              <el-button type="primary" @click="openEmail">查看邮件</el-button>-->
             </div>
           </div>
         </el-card>
       </el-scrollbar>
     </div>
+    <user-email
+      v-model="emailDialog"
+    />
   </div>
 </template>
 <script setup lang="ts">
-
+import { onMounted, ref } from 'vue'
+import { emailSideData } from '@/store/email-side-data'
+import { globalSideStore } from '@/store/global-data'
+import UserEmail from '@/components/user-email.vue'
+// 收件箱
+const receiveEmailList = ref([])
+// 邮件库
+const emailStore = emailSideData()
+// 公共仓库
+const globalStore = globalSideStore()
+// 个人收件箱
+const myEmail = ref<any>([])
+// 备份完整邮件
+const noChangeEmails = ref([])
+const emailDialog = ref(false)
+const openEmail = () => {
+  emailDialog.value = true
+}
+onMounted(() => {
+  // 收件箱
+  receiveEmailList.value = emailStore.emailList as any
+  receiveEmailList.value.forEach((e:any) => {
+    for (let i = 0; i < e.sendPerson.length; i++) {
+      if (e.sendPerson[i].username === globalStore.currentEmployee?.username) {
+        myEmail.value.push(e)
+      }
+    }
+  })
+  noChangeEmails.value = myEmail.value
+  console.log('myEmail', myEmail.value)
+})
 </script>
 
 <style scoped lang="scss">

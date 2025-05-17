@@ -41,8 +41,8 @@
         <span v-if="globalStore.loginClassify === 'manager'" class="danger default-font-size pointer" @click="goEmployee">切换为员工端</span>
       </el-col>
       <el-col :span="12" class="location-right">
-        <span v-if="globalStore.loginClassify === 'employee'" class="primary default-font-size pointer">忘记密码</span>
-        <span v-if="globalStore.loginClassify === 'manager'" class="danger default-font-size pointer">忘记密码</span>
+        <span v-if="globalStore.loginClassify === 'employee'" class="primary default-font-size pointer"></span>
+        <span v-if="globalStore.loginClassify === 'manager'" class="danger default-font-size pointer"></span>
       </el-col>
     </el-row>
   </div>

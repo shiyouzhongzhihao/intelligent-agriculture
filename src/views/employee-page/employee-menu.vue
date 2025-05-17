@@ -44,10 +44,11 @@ const select = (key: string) => {
 const envBadge = ref()
 const confirmBadge = ref()
 onMounted(() => {
-  envBadge.value = envStore.envDataList.filter((item:any) =>
-    (item.airWetness < 20 || item.airWetness > 80) ||
-    (item.envTemperature < 15 || item.envTemperature > 35) ||
-    (item.lightIntensity < 2000)).length
+  envBadge.value = envStore.envDataList.filter((item: any) =>
+    (parseFloat(item.airWetness) < 20 || parseFloat(item.airWetness) > 80) ||
+    (parseFloat(item.envTemperature) < 15 || parseFloat(item.envTemperature) > 35) ||
+    (parseFloat(item.lightIntensity) < 30)
+  ).length
   confirmBadge.value = employeeStore.employeeList.filter(item => item.state === '已审批' && item.process !== '已确认').length
 })
 </script>

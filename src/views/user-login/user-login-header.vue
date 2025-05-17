@@ -1,9 +1,19 @@
 <template>
-  <div>
-    智能环境管理系统
+  <div class="main">
+    <img src="@/assets/ias-logo.png" alt="" class="logo-img">
   </div>
 </template>
 
 <script setup lang="ts">
 
 </script>
+<style scoped lang="scss">
+.main {
+  height: 100%;
+  display: flex;
+  .logo-img {
+    height: 70%;
+    align-self: center;
+  }
+}
+</style>

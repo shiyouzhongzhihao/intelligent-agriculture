@@ -13,39 +13,40 @@
       <el-text type="success">安全阈值</el-text>
       <el-text type="success">温度：15℃-35℃</el-text>
       <el-text type="success">湿度：20%-80%</el-text>
-      <el-text type="success">光照：2000Lux以上</el-text>
+      <el-text type="success">光照：30%以上</el-text>
     </div>
     <div style="margin-top: 5px">
       <el-table :data="envData" stripe style="width: 100%;height: 500px;">
-        <el-table-column prop="date" label="时间" width="120" />
+        <el-table-column prop="date" label="时间" width="190" />
         <el-table-column prop="envTemperature" label="环境温度" width="120">
           <template #default="scope">
-            <span :class="scope.row.envTemperature < 15 || scope.row.envTemperature > 35 ? 'danger' : ''">
-              {{scope.row.envTemperature}}
+            <span :class="parseFloat(scope.row.envTemperature) < 15 || parseFloat(scope.row.envTemperature) > 35 ? 'danger' : ''">
+              {{ parseFloat(scope.row.envTemperature) }}
             </span>
           </template>
         </el-table-column>
         <el-table-column label="空气湿度" width="120">
           <template #default="scope">
-            <span :class="scope.row.airWetness < 20 || scope.row.airWetness > 80 ? 'danger' : ''">
-              {{scope.row.airWetness}}
+            <span :class="parseFloat(scope.row.airWetness) < 20 || parseFloat(scope.row.airWetness) > 80 ? 'danger' : ''">
+              {{ parseFloat(scope.row.airWetness) }}
             </span>
           </template>
         </el-table-column>
         <el-table-column prop="lightIntensity" label="光照强度" width="120">
           <template #default="scope">
-            <span :class="scope.row.lightIntensity < 2000 ? 'danger' : ''">
-              {{scope.row.lightIntensity}}
+            <span :class="parseFloat(scope.row.lightIntensity) < 30 ? 'danger' : ''">
+              {{ parseFloat(scope.row.lightIntensity) }}
             </span>
           </template>
+
         </el-table-column>
-        <el-table-column fixed="right" label="操作" min-width="110">
-          <template #default="scope">
-            <el-button link type="primary" size="default" @click="addDiary(scope.row)">
-              新增日志
-            </el-button>
-          </template>
-        </el-table-column>
+        <!--        <el-table-column fixed="right" label="操作" min-width="110">-->
+        <!--          <template #default="scope">-->
+        <!--            <el-button link type="primary" size="default" @click="addDiary(scope.row)">-->
+        <!--              新增日志-->
+        <!--            </el-button>-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
       </el-table>
     </div>
     <add-dialog
@@ -88,7 +89,7 @@ const addDiary = (row: envType) => {
   const newRow = { ...row }
   type.value = 'add'
   newRow.airWetness = newRow.airWetness + '%'
-  newRow.lightIntensity = newRow.lightIntensity + 'Lux'
+  newRow.lightIntensity = newRow.lightIntensity + '%'
   newRow.envTemperature = newRow.envTemperature + '℃'
   envStore.setCurrentAddDiary(newRow)
   dialogState.value = true
@@ -100,23 +101,37 @@ const addDiary = (row: envType) => {
  */
 const changeRadio = () => {
   console.log(radio.value)
+
+  // 重置 envData
+  envData.value = envStore.envDataList
+
   if (radio.value === 'temperature') {
-    envData.value = envStore.envDataList
-    envData.value = envData.value.filter((item:any) => item.envTemperature < 15 || item.envTemperature > 35)
-    envNumber.value = envData.value.length
+    // 筛选温度数据，低于 15°C 或高于 35°C 属于危险范围
+    envData.value = envData.value.filter((item: any) => {
+      const temperature = parseFloat(item.envTemperature) // 提取数值部分
+      return temperature < 15 || temperature > 35
+    })
   } else if (radio.value === 'air') {
-    envData.value = envStore.envDataList
-    envData.value = envData.value.filter((item:any) => item.airWetness < 20 || item.airWetness > 80)
-    envNumber.value = envData.value.length
+    // 筛选湿度数据，低于 20% 或高于 80% 属于危险范围
+    envData.value = envData.value.filter((item: any) => {
+      const airWetness = parseFloat(item.airWetness) // 提取数值部分
+      return airWetness < 20 || airWetness > 80
+    })
   } else if (radio.value === 'light') {
-    envData.value = envStore.envDataList
-    envData.value = envData.value.filter((item:any) => item.lightIntensity < 2000)
-    envNumber.value = envData.value.length
+    // 筛选光照强度数据，低于 30% 属于危险范围
+    envData.value = envData.value.filter((item: any) => {
+      const lightIntensity = parseFloat(item.lightIntensity) // 提取数值部分
+      return lightIntensity < 30 // 修改为30%
+    })
   } else if (radio.value === 'all') {
+    // 如果选择了 'all'，不进行任何过滤
     envData.value = envStore.envDataList
-    envNumber.value = envData.value.length
   }
+
+  // 更新 envNumber 的值
+  envNumber.value = envData.value.length
 }
+
 /**
  * 关闭弹窗
  */
@@ -134,7 +149,7 @@ onMounted(() => {
       date: getCompleteTime() // 每次获取最新时间
     }
     console.log(info.value)
-    envStore.addEnvDataList(info.value)
+    // envStore.addEnvDataList(info.value)
   }, 1000000000)
 })
 

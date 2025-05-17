@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-table :data="managerList" stripe style="width: 100%">
+    <el-table :data="managerList" stripe style="width: 95%;margin: 0 auto">
       <el-table-column fixed label="日志文号" width="130">
         <template #default="scope">
           <el-button link type="primary" size="default" @click="viewDetail(scope.row)">
@@ -8,7 +8,25 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column prop="diaryTitle" label="日志标题" width="300" />
+      <el-table-column prop="diaryTitle" label="日志标题" width="250" />
+      <el-table-column label="创建人" width="120">
+        <template #default="scope">
+          <span>{{scope.row.createEmployee}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="提交人" width="120">
+        <template #default="scope">
+          <span>{{scope.row.submitEmployee}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="催办状态" width="120">
+        <template #default="scope">
+          <span v-if="scope.row.remind === '未催办'">
+            未催办
+          </span>
+          <span v-else class="danger">已催办</span>
+        </template>
+      </el-table-column>
       <el-table-column label="日志分类" width="120">
         <template #default="scope">
           <span v-if="scope.row.diaryClassify === '1'">
@@ -36,6 +54,14 @@
         <el-empty description="暂无数据" />
       </template>
     </el-table>
+    <add-dialog
+      ref="addDialogRef"
+      v-model="dialogState"
+      :employeeDetail="employeeDetail"
+      :type="type"
+      :is-env="isEnv"
+      @close="closeDialog"
+    />
   </div>
 </template>
 
@@ -46,10 +72,21 @@ import { onMounted, ref } from 'vue'
 import { employeeListType } from '@/type'
 import { completeTime } from '@/utils/time'
 import { globalSideStore } from '@/store/global-data'
+import AddDialog from '@/components/add-dialog.vue'
 
 const globalStore = globalSideStore()
+// 单行日志详情
+const employeeDetail = ref<employeeListType>()
+// 添加日志弹窗组件ref
+const addDialogRef = ref()
 const employeeStore = employeeSideStore()
+// 弹窗操作状态
+const type = ref<string>('')
 const managerList = ref()
+// 新增-修改-查看弹窗显隐状态
+const dialogState = ref<boolean>(false)
+// 是否环境
+const isEnv = ref<boolean>(false)
 /**
  * 审批
  */
@@ -74,6 +111,23 @@ const getStateClass = (state:string) => {
     return 'process-success'
   }
   return ''
+}
+/**
+ * 查看详情
+ * @param row 单行数据
+ */
+const viewDetail = (row:employeeListType) => {
+  type.value = 'view'
+  isEnv.value = row.isEnv as boolean
+  dialogState.value = true
+  employeeDetail.value = row
+  addDialogRef.value.getEmployeeDetail(row.diaryToken)
+}
+/**
+ * 关闭弹窗
+ */
+const closeDialog = () => {
+  dialogState.value = false
 }
 onMounted(() => {
   // managerList.value = employeeStore.employeeList.filter(item => item.state !== '未提交')

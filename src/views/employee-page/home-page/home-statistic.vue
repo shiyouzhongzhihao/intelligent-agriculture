@@ -111,38 +111,44 @@ const ehiScore = useTransition(ehiScoreNumber, {
  * 温度评分逻辑
  * @param temp
  */
-const calculateTempScore = (temp:any) => {
-  if (temp < 10 || temp > 40) return 0 // 极端值直接0分
-  if (temp >= 20 && temp <= 30) return 100 // 最佳区间满分
+const calculateTempScore = (temp: any) => {
+  const temperature = parseFloat(temp) // 去除单位并转为数字
+  if (temperature < 10 || temperature > 40) return 0 // 极端值直接0分
+  if (temperature >= 20 && temperature <= 30) return 100 // 最佳区间满分
 
   // 过渡区间线性评分
-  return temp < 20
-    ? (temp - 10) * 10 // 10℃→0分，20℃→100分
-    : 100 - (temp - 30) * 10 // 30℃→100分，40℃→0分
+  return temperature < 20
+    ? (temperature - 10) * 10 // 10℃→0分，20℃→100分
+    : 100 - (temperature - 30) * 10 // 30℃→100分，40℃→0分
 }
 
 /**
  * 湿度评分逻辑
  * @param humidity
  */
-const calculateHumidityScore = (humidity:any) => {
-  if (humidity < 20 || humidity > 80) return 0
-  if (humidity >= 40 && humidity <= 60) return 100
-  return humidity < 40
-    ? (humidity - 20) * 5 // 20%→0分，40%→100分
-    : 100 - (humidity - 60) * 5 // 60%→100分，80%→0分
+const calculateHumidityScore = (humidity: any) => {
+  const humidityValue = parseFloat(humidity) // 去除单位并转为数字
+  if (humidityValue < 20 || humidityValue > 80) return 0
+  if (humidityValue >= 40 && humidityValue <= 60) return 100
+  return humidityValue < 40
+    ? (humidityValue - 20) * 5 // 20%→0分，40%→100分
+    : 100 - (humidityValue - 60) * 5 // 60%→100分，80%→0分
 }
 
 /**
  * 光照评分逻辑
  * @param light
  */
-const calculateLightScore = (light:any) => {
-  if (light < 1000) return 0
-  if (light >= 5000 && light <= 30000) return 100
-  return light < 5000
-    ? (light - 1000) / 40 // 1000→0，5000→100
-    : 100 - (light - 30000) / 700 // 30000→100，超过按每700lux扣1分
+const calculateLightScore = (light: any) => {
+  const lightValue = parseFloat(light) // 去除单位并转为数字
+  if (lightValue < 20) return 0 // 低于20%光照强度给0分
+  if (lightValue >= 80) return 100 // 超过80%光照强度给100分
+  if (lightValue >= 60) {
+    // 60%-80%之间，分数从100开始递减
+    return 100 - (lightValue - 60) * (100 / 20) // 60%光照得100分，80%光照得0分
+  }
+  // 20%-60%之间，分数从0线性增加到100
+  return (lightValue - 20) * (100 / 40) // 20%光照得0分，60%光照得100分
 }
 
 /**
@@ -168,10 +174,12 @@ onMounted(() => {
   }
   ehiScoreNumber.value = ehiScoreNumber.value / ehiList.value.length
   confirmDataNumber.value = employeeStore.employeeList.filter(item => item.state === '已审批' && item.process !== '已确认').length
-  dangerDataNumber.value = envStore.envDataList.filter((item:any) =>
-    (item.airWetness < 20 || item.airWetness > 80) ||
-    (item.envTemperature < 15 || item.envTemperature > 35) ||
-    (item.lightIntensity < 2000)).length
+  dangerDataNumber.value = envStore.envDataList.filter((item: any) =>
+    (parseFloat(item.airWetness) < 20 || parseFloat(item.airWetness) > 80) ||
+    (parseFloat(item.envTemperature) < 15 || parseFloat(item.envTemperature) > 35) ||
+    (parseFloat(item.lightIntensity) < 30)
+  ).length
+
   emailList.value = emailStore.emailList
   emailList.value.forEach((item:any) => {
     for (let i = 0; i < item.sendPerson.length; i++) {

@@ -131,7 +131,10 @@ import { messageClassifyEnums } from '@/enums'
 import BatchSubmitDialog from '@/components/batch-submit-dialog.vue'
 import TimeLine from '@/components/time-line.vue'
 import { completeTime } from '@/utils/time'
+import { envSideStore } from '@/store/env-side-data'
 
+// 环境仓库
+const envStore = envSideStore()
 const props = defineProps({
   result: {
     type: Array
@@ -219,6 +222,7 @@ const inputDiary = (row:employeeListType) => {
 const deleteDiary = (row:employeeListType) => {
   console.log(row)
   employeeStore.deleteEmployeeList(row)
+  envStore.deleteEnvDataList(row)
   // 消息类型设置为delete
   globalStore.setMessageClassify('delete')
 }

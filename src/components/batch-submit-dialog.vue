@@ -90,12 +90,16 @@ import { defineEmits, ref, defineProps, PropType } from 'vue'
 import { Warning, CircleCheck } from '@element-plus/icons-vue'
 import { employeeListType } from '@/type'
 import { ElMessage } from 'element-plus'
+import { completeTime } from '@/utils/time'
+import { globalSideStore } from '@/store/global-data'
 
 const props = defineProps({
   selectList: {
     type: Array as PropType<employeeListType[]>
   }
 })
+// 公共仓库
+const globalStore = globalSideStore()
 const activeNames = ref([0])
 const emit = defineEmits(['batchClose'])
 
@@ -113,6 +117,9 @@ const batchSubmit = () => {
     // 勾选完毕执行下一步
     props.selectList?.forEach(item => {
       item.state = '待审批'
+      item.submitEmployee = globalStore.currentEmployee?.name
+      item.submitDate = completeTime
+      item.process = '已提交'
     })
     ElMessage({
       message: '批量提交成功',

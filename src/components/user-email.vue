@@ -353,13 +353,18 @@
 </template>
 <script setup lang="ts">
 import { CircleCloseFilled, CirclePlus, Plus, Refresh, Promotion, Edit } from '@element-plus/icons-vue'
-import { onMounted, ref } from 'vue'
+import { defineProps, onMounted, ref } from 'vue'
 import { emailType } from '@/type'
 import { globalSideStore } from '@/store/global-data'
 import { emailSideData } from '@/store/email-side-data'
 import { getTime } from '@/utils/time'
 import AddContact from '@/components/add-contact.vue'
 
+const props = defineProps({
+  type: {
+    type: String
+  }
+})
 // 公共仓库
 const globalStore = globalSideStore()
 // 邮件库
@@ -425,12 +430,21 @@ const openAddContactDialog = () => {
  * 发送邮件
  */
 const sendEmail = () => {
-  info.value.username = globalStore.currentEmployee?.username
-  info.value.type = globalStore.currentEmployee?.type
-  info.value.name = globalStore.currentEmployee?.name
+  if (props.type === 'employee') {
+    info.value.username = globalStore.currentEmployee?.username
+    info.value.type = globalStore.currentEmployee?.type
+    info.value.name = globalStore.currentEmployee?.name
+    info.value.email = globalStore.currentEmployee?.email
+    info.value.avatar = globalStore.currentEmployee?.avatar
+  }
+  if (props.type === 'manager') {
+    info.value.username = globalStore.currentManager?.username
+    info.value.type = globalStore.currentManager?.type
+    info.value.name = globalStore.currentManager?.name
+    info.value.email = globalStore.currentManager?.email
+    info.value.avatar = globalStore.currentManager?.avatar
+  }
   info.value.sendPerson = addPersonGroup.value
-  info.value.email = globalStore.currentEmployee?.email
-  info.value.avatar = globalStore.currentEmployee?.avatar
   info.value.date = getTime()
   // 设置未读
   for (let i = 0; i < info.value.sendPerson.length; i++) {
@@ -490,8 +504,15 @@ const goSendEmail = () => {
   // 寄件箱
   console.log(receiveEmailList.value)
   receiveEmailList.value.forEach((e:any) => {
-    if (e.username === globalStore.currentEmployee?.username) {
-      sendEmailList.value.push(e)
+    if (props.type === 'employee') {
+      if (e.username === globalStore.currentEmployee?.username) {
+        sendEmailList.value.push(e)
+      }
+    }
+    if (props.type === 'manager') {
+      if (e.username === globalStore.currentManager?.username) {
+        sendEmailList.value.push(e)
+      }
     }
   })
 }
@@ -504,8 +525,15 @@ const goReceiveEmail = () => {
   myEmail.value = []
   receiveEmailList.value.forEach((e:any) => {
     for (let i = 0; i < e.sendPerson.length; i++) {
-      if (e.sendPerson[i].username === globalStore.currentEmployee?.username) {
-        myEmail.value.push(e)
+      if (props.type === 'employee') {
+        if (e.sendPerson[i].username === globalStore.currentEmployee?.username) {
+          myEmail.value.push(e)
+        }
+      }
+      if (props.type === 'manager') {
+        if (e.sendPerson[i].username === globalStore.currentManager?.username) {
+          myEmail.value.push(e)
+        }
       }
     }
   })
@@ -515,8 +543,15 @@ onMounted(() => {
   receiveEmailList.value = emailStore.emailList as any
   receiveEmailList.value.forEach((e:any) => {
     for (let i = 0; i < e.sendPerson.length; i++) {
-      if (e.sendPerson[i].username === globalStore.currentEmployee?.username) {
-        myEmail.value.push(e)
+      if (props.type === 'employee') {
+        if (e.sendPerson[i].username === globalStore.currentEmployee?.username) {
+          myEmail.value.push(e)
+        }
+      }
+      if (props.type === 'manager') {
+        if (e.sendPerson[i].username === globalStore.currentManager?.username) {
+          myEmail.value.push(e)
+        }
       }
     }
   })
