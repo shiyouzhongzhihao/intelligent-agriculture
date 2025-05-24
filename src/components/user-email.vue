@@ -359,6 +359,7 @@ import { globalSideStore } from '@/store/global-data'
 import { emailSideData } from '@/store/email-side-data'
 import { getTime } from '@/utils/time'
 import AddContact from '@/components/add-contact.vue'
+import { ElMessage } from 'element-plus'
 
 const props = defineProps({
   type: {

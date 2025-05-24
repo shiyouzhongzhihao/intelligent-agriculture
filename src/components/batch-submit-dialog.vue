@@ -90,14 +90,17 @@ import { defineEmits, ref, defineProps, PropType } from 'vue'
 import { Warning, CircleCheck } from '@element-plus/icons-vue'
 import { employeeListType } from '@/type'
 import { ElMessage } from 'element-plus'
-import { completeTime } from '@/utils/time'
+import { completeTime, getCompleteTime } from '@/utils/time'
 import { globalSideStore } from '@/store/global-data'
+import updateData from '@/utils/updateData'
+import { employeeSideStore } from '@/store/employee-side-data'
 
 const props = defineProps({
   selectList: {
     type: Array as PropType<employeeListType[]>
   }
 })
+const employeeStore = employeeSideStore()
 // 公共仓库
 const globalStore = globalSideStore()
 const activeNames = ref([0])
@@ -109,7 +112,7 @@ const close = () => {
 /**
  * 批量提交
  */
-const batchSubmit = () => {
+const batchSubmit = async () => {
 // 检查 selectList 中的每个对象的 batchChecked 属性
   const allChecked = props.selectList?.every(item => item.batchChecked === true)
   // 如果所有对象的 batchChecked 都为 true，继续执行下一步
@@ -118,13 +121,14 @@ const batchSubmit = () => {
     props.selectList?.forEach(item => {
       item.state = '待审批'
       item.submitEmployee = globalStore.currentEmployee?.name
-      item.submitDate = completeTime
+      item.submitDate = getCompleteTime()
       item.process = '已提交'
     })
     ElMessage({
       message: '批量提交成功',
       type: 'success'
     })
+    await updateData(employeeStore.employeeList)
     emit('batchClose')
   } else {
     // 未全部勾选则不执行后续操作

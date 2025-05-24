@@ -44,15 +44,15 @@
           </div>
         </template>
       </el-statistic>
-      <el-button class="countdown-footer" type="primary" @click="reset">
-        查看
-      </el-button>
+      <!--      <el-button class="countdown-footer" type="primary" @click="reset">-->
+      <!--        查看-->
+      <!--      </el-button>-->
     </el-col>
     <el-col :span="5">
       <el-statistic title="待确认日志" :value="confirmData"/>
-      <el-button class="countdown-footer" type="primary" @click="reset">
-        查看
-      </el-button>
+      <!--      <el-button class="countdown-footer" type="primary" @click="reset">-->
+      <!--        查看-->
+      <!--      </el-button>-->
     </el-col>
     <el-col :span="4">
       <el-statistic title="未读邮件" :value="noRead">
@@ -62,9 +62,9 @@
           </el-icon>
         </template>
       </el-statistic>
-      <el-button class="countdown-footer" type="primary" @click="reset">
-        查看
-      </el-button>
+      <!--      <el-button class="countdown-footer" type="primary" @click="reset">-->
+      <!--        查看-->
+      <!--      </el-button>-->
     </el-col>
   </el-row>
 </template>

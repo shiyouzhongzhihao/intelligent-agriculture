@@ -29,6 +29,7 @@
           v-model="info.password"
           style="width: 100%"
           placeholder="请输入密码"
+          type="password"
           :prefix-icon="Lock"
         />
       </el-form-item>

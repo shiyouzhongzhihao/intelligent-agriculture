@@ -158,12 +158,14 @@
 import { defineProps, ref, defineEmits, defineExpose, watch } from 'vue'
 import { employeeSideStore } from '@/store/employee-side-data'
 import { setRandom } from '@/utils/random'
-import { completeTime } from '@/utils/time'
+import { completeTime, getCompleteTime } from '@/utils/time'
 import rules from '@/utils/rules'
 import { employeeListType } from '@/type'
 import { dialogStateEnums } from '@/enums'
 import { globalSideStore } from '@/store/global-data'
 import { envSideStore } from '@/store/env-side-data'
+import axios from 'axios'
+import updateData from '@/utils/updateData'
 
 const props = defineProps({
   type: {
@@ -242,10 +244,11 @@ const close = () => {
 }
 const edit = () => {
   // 表单验证
-  formRef.value.validate((valid: any) => {
+  formRef.value.validate(async (valid: any) => {
     if (valid) {
       // 消息类型设置为edit
       globalStore.setMessageClassify('edit')
+      await updateData(employeeStore.employeeList)
       window.location.reload() // 刷新当前页面
       // 关闭弹窗
       emit('close')
@@ -266,11 +269,11 @@ const add = () => {
     info.value.envTemperature = 'default'
   }
   // 表单验证
-  formRef.value.validate((valid: any) => {
+  formRef.value.validate(async (valid: any) => {
     if (valid) {
       console.log('表单验证通过，执行新增逻辑')
       // 传入当前的时间和随机生成的唯一token
-      info.value.date = completeTime
+      info.value.date = getCompleteTime()
       info.value.diaryToken = setRandom()
       // 员工姓名补充
       info.value.staffId = globalStore.currentEmployee?.name
@@ -305,6 +308,27 @@ const add = () => {
       info.value.process = '已新建'
       // 新建员工设置
       info.value.createEmployee = globalStore.currentEmployee?.name
+      // 数据库增加
+      try {
+        // 新增
+        const res3 = await axios.get('/api/add', {
+          params: info.value
+        })
+        console.log('新增数据:', res3)
+        // 查看
+        const res1 = await axios.get('/api/')
+        console.log('基础数据:', res1.data.data)
+      } catch (error: any) {
+        // 增强错误处理
+        if (error.response) {
+          console.error('请求错误:', {
+            status: error.response.status,
+            data: error.response.data
+          })
+        } else {
+          console.error('网络错误:', error.message)
+        }
+      }
       // 仓库增加处理
       employeeStore.addEmployeeList(info.value)
       // -----测试-----

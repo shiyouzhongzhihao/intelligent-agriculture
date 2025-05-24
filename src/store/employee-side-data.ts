@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { employeeListType, searchType } from '@/type'
+import updateData from '@/utils/updateData'
 
 // 设置仓库名 employee-side-data
 export const employeeSideStore = defineStore('employee-side-data', () => {
@@ -12,8 +13,9 @@ export const employeeSideStore = defineStore('employee-side-data', () => {
    * 新增审批日志
    * @param newEmployee
    */
-  const addEmployeeList = (newEmployee:employeeListType) => {
+  const addEmployeeList = async (newEmployee: employeeListType) => {
     employeeList.value.unshift(newEmployee)
+    await updateData(employeeList.value)
     window.location.reload() // 刷新当前页面
   }
   /**

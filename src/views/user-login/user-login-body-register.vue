@@ -126,7 +126,7 @@ const sendCode = async () => {
   allowEmail.value = false
   code.value = Math.floor(100000 + Math.random() * 900000)
   globalStore.setCode(code.value)
-  console.log(code.value)
+  // console.log(code.value)
   try {
     await emailjs.send(
       'service_supj0pd', // 替换实际服务ID

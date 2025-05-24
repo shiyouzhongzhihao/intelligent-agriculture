@@ -1,6 +1,12 @@
 <template>
   <div>
-    <el-table :data="managerList" stripe style="width: 95%;margin: 0 auto">
+    <el-table
+      :data="managerList"
+      stripe
+      style="width: 95%;
+      margin: 0 auto"
+      v-loading="loading"
+    >
       <el-table-column fixed label="日志文号" width="130">
         <template #default="scope">
           <el-button link type="primary" size="default" @click="viewDetail(scope.row)">
@@ -45,7 +51,7 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" min-width="120">
         <template #default="scope">
-          <el-button link type="primary" size="default" @click="approval(scope.row)">
+          <el-button link type="primary" size="default" @click="approval(scope.row)" :disabled="scope.row.state==='已审批'">
             审批
           </el-button>
         </template>
@@ -70,10 +76,12 @@
 import { employeeSideStore } from '@/store/employee-side-data'
 import { onMounted, ref } from 'vue'
 import { employeeListType } from '@/type'
-import { completeTime } from '@/utils/time'
+import { completeTime, getCompleteTime } from '@/utils/time'
 import { globalSideStore } from '@/store/global-data'
 import AddDialog from '@/components/add-dialog.vue'
+import updateData from '@/utils/updateData'
 
+const loading = ref(false)
 const globalStore = globalSideStore()
 // 单行日志详情
 const employeeDetail = ref<employeeListType>()
@@ -90,12 +98,15 @@ const isEnv = ref<boolean>(false)
 /**
  * 审批
  */
-const approval = (row:employeeListType) => {
+const approval = async (row:employeeListType) => {
   console.log(row)
   row.process = '已审批'
   row.state = '已审批'
   row.approvalManager = globalStore.currentManager?.name
-  row.approvalDate = completeTime
+  row.approvalDate = getCompleteTime()
+  loading.value = true
+  await updateData(employeeStore.employeeList)
+  loading.value = false
   window.location.reload() // 刷新当前页面
 }
 /**

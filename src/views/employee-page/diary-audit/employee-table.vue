@@ -10,6 +10,7 @@
         </el-col>
         <el-col :span="12">
           <div style="display: flex;justify-content: flex-end;">
+            <el-button type="danger" @click="clear">清除数据</el-button>
             <el-button type="primary" @click="batchSubmit">批量提交</el-button>
           </div>
         </el-col>
@@ -33,7 +34,12 @@
       :employeeDetail="employeeDetail"
       @timeLineClose="timeLineClose"
     />
-    <el-table :data="employeeList" stripe style="width: 100%" @selection-change="changeSelection">
+    <el-table
+      :data="employeeList"
+      stripe style="width: 100%"
+      @selection-change="changeSelection"
+      v-loading="loading"
+    >
       <el-table-column type="selection" :selectable="selectable" width="40"/>
       <el-table-column fixed label="日志文号" width="130">
         <template #default="scope">
@@ -111,11 +117,11 @@
         v-model:current-page="page"
         @change="changePage"
       />
-      <span class="pagination default-font-size font-style" style="margin-left: 20px">
-        去往
-        <el-input class="font-style" style="width: 30px;height: 25px" v-model="setPage"></el-input>
-        页
-      </span>
+      <!--      <span class="pagination default-font-size font-style" style="margin-left: 20px">-->
+      <!--        去往-->
+      <!--        <el-input class="font-style" style="width: 30px;height: 25px" v-model="setPage"></el-input>-->
+      <!--        页-->
+      <!--      </span>-->
     </div>
   </div>
 </template>
@@ -130,8 +136,10 @@ import { globalSideStore } from '@/store/global-data'
 import { messageClassifyEnums } from '@/enums'
 import BatchSubmitDialog from '@/components/batch-submit-dialog.vue'
 import TimeLine from '@/components/time-line.vue'
-import { completeTime } from '@/utils/time'
+import { completeTime, getCompleteTime } from '@/utils/time'
 import { envSideStore } from '@/store/env-side-data'
+import axios from 'axios'
+import updateData from '@/utils/updateData'
 
 // 环境仓库
 const envStore = envSideStore()
@@ -140,6 +148,7 @@ const props = defineProps({
     type: Array
   }
 })
+const loading = ref(false)
 // 新增-修改-查看弹窗显隐状态
 const dialogState = ref<boolean>(false)
 // 批量提交弹窗显隐状态
@@ -180,6 +189,38 @@ const timeLineClose = () => {
   timeLineDialogState.value = false
 }
 /**
+ * 清除
+ */
+const clear = () => {
+  ElMessageBox.confirm(
+    '您确定清除所有数据吗',
+    'Warning',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  )
+    .then(async () => {
+      try {
+        const response = await axios.get('/api/deleteAll')
+        console.log('清除结果', response.data)
+      } catch (error: any) {
+        console.log(error)
+      }
+      ElMessage({
+        type: 'success',
+        message: '清除成功'
+      })
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '请求取消'
+      })
+    })
+}
+/**
  * 新增日志
  */
 const addDiary = () => {
@@ -193,7 +234,6 @@ const addDiary = () => {
  * @param row 单行数据
  */
 const editDiary = (row:employeeListType) => {
-  console.log(row.isEnv)
   type.value = 'edit'
   dialogState.value = true
   employeeDetail.value = row
@@ -204,12 +244,16 @@ const editDiary = (row:employeeListType) => {
  * 提交日志
  * @param row 单行数据
  */
-const inputDiary = (row:employeeListType) => {
+const inputDiary = async (row:employeeListType) => {
   row.submitEmployee = globalStore.currentEmployee?.name
-  row.submitDate = completeTime
+  row.submitDate = getCompleteTime()
   row.state = '待审批'
   row.process = '已提交'
-  window.location.reload() // 刷新当前页面
+  console.log('提交后', employeeStore.employeeList)
+  loading.value = true
+  await updateData(employeeStore.employeeList)
+  loading.value = false
+  // window.location.reload() // 刷新当前页面
   ElMessage({
     message: '提交成功',
     type: 'success'
@@ -219,10 +263,11 @@ const inputDiary = (row:employeeListType) => {
  * 删除日志
  * @param row 单行数据
  */
-const deleteDiary = (row:employeeListType) => {
+const deleteDiary = async (row:employeeListType) => {
   console.log(row)
   employeeStore.deleteEmployeeList(row)
   envStore.deleteEnvDataList(row)
+  await updateData(employeeStore.employeeList)
   // 消息类型设置为delete
   globalStore.setMessageClassify('delete')
 }
@@ -230,12 +275,18 @@ const deleteDiary = (row:employeeListType) => {
  * 确认审批
  * @param row
  */
-const confirm = (row:employeeListType) => {
-  console.log(row)
+const confirm = async (row:employeeListType) => {
   row.confirmEmployee = globalStore.currentEmployee?.name
-  row.confirmDate = completeTime
+  row.confirmDate = getCompleteTime()
   row.process = '已确认'
-  window.location.reload() // 刷新当前页面
+  loading.value = true
+  await updateData(employeeStore.employeeList)
+  loading.value = false
+  ElMessage({
+    type: 'success',
+    message: '确认成功'
+  })
+  // window.location.reload() // 刷新当前页面
 }
 /**
  * 撤回日志审批
@@ -250,14 +301,17 @@ const backDiary = (row:employeeListType) => {
       type: 'warning'
     }
   )
-    .then(() => {
+    .then(async () => {
+      row.state = '未提交'
+      row.remind = '未催办'
+      row.process = '已新建'
+      loading.value = true
+      await updateData(employeeStore.employeeList)
+      loading.value = false
       ElMessage({
         type: 'success',
         message: '审批已撤回'
       })
-      row.state = '未提交'
-      row.remind = '未催办'
-      row.process = '已新建'
     })
     .catch(() => {
       console.log('取消撤回')
@@ -266,8 +320,15 @@ const backDiary = (row:employeeListType) => {
 /**
  * 催办
  */
-const remind = (row:employeeListType) => {
+const remind = async (row:employeeListType) => {
   row.remind = '已催办'
+  loading.value = true
+  await updateData(employeeStore.employeeList)
+  loading.value = false
+  ElMessage({
+    message: '催办成功',
+    type: 'success'
+  })
 }
 /**
  * 查看详情

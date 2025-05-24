@@ -51,7 +51,6 @@ onMounted(() => {
     }
   })
   noChangeEmails.value = myEmail.value
-  console.log('myEmail', myEmail.value)
 })
 </script>
 

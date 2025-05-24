@@ -5,6 +5,10 @@
 
 <script lang="ts" setup>
 import { getRequest } from '@/services/api'
+import { employeeSideStore } from '@/store/employee-side-data'
+import { onMounted } from 'vue'
+import axios from 'axios'
+import { emailSideData } from '@/store/email-side-data'
 
 const get = async () => {
   const res = await getRequest({
@@ -21,6 +25,47 @@ const get = async () => {
   })
   console.log(res)
 }
+const ws = new WebSocket('ws://localhost:3000')
+
+ws.onopen = () => {
+  console.log('已连接到服务器')
+  ws.send('你好，我是客户端')
+}
+
+ws.onmessage = (event) => {
+  console.log('收到服务器消息:', JSON.parse(event.data))
+}
+onMounted(async () => {
+  // try {
+  //   const res1 = await axios.get('/api/')
+  //   console.log('基础数据:', res1.data.data)
+  //   employeeStore.employeeList = JSON.parse(JSON.stringify(res1.data.data))
+  // } catch (error:any) {
+  //   // 增强错误处理
+  //   if (error.response) {
+  //     console.error('请求错误:', {
+  //       status: error.response.status,
+  //       data: error.response.data
+  //     })
+  //   } else {
+  //     console.error('网络错误:', error.message)
+  //   }
+  // }
+  try {
+    const res1 = await axios.get('/api/getEnv')
+    console.log('环境数据:', res1.data.data)
+  } catch (error:any) {
+    // 增强错误处理
+    if (error.response) {
+      console.error('请求错误:', {
+        status: error.response.status,
+        data: error.response.data
+      })
+    } else {
+      console.error('网络错误:', error.message)
+    }
+  }
+})
 </script>
 
 <style>
