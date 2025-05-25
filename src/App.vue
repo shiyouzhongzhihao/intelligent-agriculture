@@ -5,10 +5,8 @@
 
 <script lang="ts" setup>
 import { getRequest } from '@/services/api'
-import { employeeSideStore } from '@/store/employee-side-data'
 import { onMounted } from 'vue'
 import axios from 'axios'
-import { emailSideData } from '@/store/email-side-data'
 
 const get = async () => {
   const res = await getRequest({
@@ -25,7 +23,7 @@ const get = async () => {
   })
   console.log(res)
 }
-const ws = new WebSocket('ws://localhost:3000')
+const ws = new WebSocket('ws://172.20.10.12:3000')
 
 ws.onopen = () => {
   console.log('已连接到服务器')

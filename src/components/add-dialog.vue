@@ -158,7 +158,7 @@
 import { defineProps, ref, defineEmits, defineExpose, watch } from 'vue'
 import { employeeSideStore } from '@/store/employee-side-data'
 import { setRandom } from '@/utils/random'
-import { completeTime, getCompleteTime } from '@/utils/time'
+import { getCompleteTime } from '@/utils/time'
 import rules from '@/utils/rules'
 import { employeeListType } from '@/type'
 import { dialogStateEnums } from '@/enums'

@@ -301,9 +301,10 @@ const rollbackAndRespond = (res, error) => {
 }
 
 // ================ 启动服务 ================
-const server = app.listen(port, () => {
-  console.log(`🚀 服务已启动：http://localhost:${port}`)
+const server = app.listen(port, '0.0.0.0', () => { // [!code ++]
+  console.log(`🚀 服务已启动：http://0.0.0.0:${port}`)
 })
+
 // ================ 添加 WebSocket 服务 ================
 const WebSocket = require('ws')
 const wss = new WebSocket.Server({ server })

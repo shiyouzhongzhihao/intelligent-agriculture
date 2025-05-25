@@ -76,7 +76,7 @@
 import { employeeSideStore } from '@/store/employee-side-data'
 import { onMounted, ref } from 'vue'
 import { employeeListType } from '@/type'
-import { completeTime, getCompleteTime } from '@/utils/time'
+import { getCompleteTime } from '@/utils/time'
 import { globalSideStore } from '@/store/global-data'
 import AddDialog from '@/components/add-dialog.vue'
 import updateData from '@/utils/updateData'

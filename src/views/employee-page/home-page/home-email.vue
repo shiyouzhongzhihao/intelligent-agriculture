@@ -37,9 +37,6 @@ const myEmail = ref<any>([])
 // 备份完整邮件
 const noChangeEmails = ref([])
 const emailDialog = ref(false)
-const openEmail = () => {
-  emailDialog.value = true
-}
 onMounted(() => {
   // 收件箱
   receiveEmailList.value = emailStore.emailList as any
