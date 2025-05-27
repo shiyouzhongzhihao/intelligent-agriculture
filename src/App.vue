@@ -7,7 +7,10 @@
 import { getRequest } from '@/services/api'
 import { onMounted } from 'vue'
 import axios from 'axios'
-
+interface EnvItem {
+  text: string;
+  time: string;
+}
 const get = async () => {
   const res = await getRequest({
     lib_version: '4.4.1',
@@ -51,7 +54,13 @@ onMounted(async () => {
   // }
   try {
     const res1 = await axios.get('/api/getEnv')
-    console.log('环境数据:', res1.data.data)
+    const result = res1.data.data.filter((item:any) => {
+      return item.text.length > 13
+    }).map(({ text, time }: EnvItem) => [
+      text.slice(13, 21),
+      time
+    ])
+    console.log(result)
   } catch (error:any) {
     // 增强错误处理
     if (error.response) {

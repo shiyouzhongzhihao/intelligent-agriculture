@@ -351,10 +351,7 @@ tcpServer.on('connection', (socket) => {
     console.error('TCP 连接错误:', err.message)
   })
 })
-// echo data:60% | nc 172.20.10.12 3001 // 手机
-// echo data:60% | nc 192.168.0.2 3001 // 单片机
-// echo data:60% | nc 192.168.241.46 3001 // fs
-// 192.168.241.46
+// echo data:60% | nc 172.20.10.12 8090 // 手机
 // 启动 TCP 服务
 tcpServer.listen(TCP_PORT, '0.0.0.0', () => {
   console.log(`🚀 TCP 服务已启动：tcp://0.0.0.0:${TCP_PORT}`)
