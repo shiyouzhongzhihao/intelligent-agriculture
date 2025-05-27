@@ -301,47 +301,61 @@ const rollbackAndRespond = (res, error) => {
 }
 
 // ================ 启动服务 ================
-const server = app.listen(port, '0.0.0.0', () => { // [!code ++]
-  console.log(`🚀 服务已启动：http://0.0.0.0:${port}`)
+const server = app.listen(port, '0.0.0.0', () => {
+  console.log(`🚀 HTTP 服务已启动：http://0.0.0.0:${port}`)
 })
 
-// ================ 添加 WebSocket 服务 ================
-const WebSocket = require('ws')
-const wss = new WebSocket.Server({ server })
+// ================ 添加 TCP 服务 ================
+const net = require('net')
+const tcpServer = net.createServer()
 
-// 当有客户端连接时
-wss.on('connection', (ws) => {
-  // 立即发送欢迎消息
-  ws.send(JSON.stringify({
-    type: 'welcome',
-    message: '连接成功！',
-    time: new Date().toLocaleString()
-  }))
-  // 接收客户端消息
-  ws.on('message', (message) => {
-    console.log('收到客户端消息:', message.toString())
-    try {
-      const msgString = message.toString()
-      console.log('收到客户端消息:', msgString)
-      // 存入数据库
-      db.run(
-        'INSERT INTO envData (text) VALUES (?)',
-        [msgString],
-        (err) => {
-          if (err) {
-            console.error('保存环境数据失败:', err.message)
-          } else {
-            console.log('💾 环境数据已存储')
-          }
+// TCP 服务配置
+const TCP_PORT = 8090 // 使用新端口避免冲突
+
+// 存储所有连接的客户端
+const clients = []
+
+tcpServer.on('connection', (socket) => {
+  console.log('👉 新的 TCP 客户端连接:', socket.remoteAddress)
+  clients.push(socket)
+
+  // 接收数据
+  socket.on('data', (data) => {
+    const message = data.toString().trim().slice(9) // 去除换行符
+    console.log('📨 收到 TCP 数据:', message)
+
+    // 存入数据库（与原WebSocket逻辑一致）
+    db.run(
+      'INSERT INTO envData (text) VALUES (?)',
+      [message],
+      (err) => {
+        if (err) {
+          console.error('保存环境数据失败:', err.message)
+        } else {
+          console.log('💾 环境数据已存储')
+          // 可选：向客户端发送确认
+          socket.write('ACK: 数据接收成功\n')
         }
-      )
-    } catch (err) {
-      console.error('消息处理错误:', err.message)
-    }
+      }
+    )
   })
 
-  // 断开连接时
-  ws.on('close', () => {
-    console.log('客户端断开连接')
+  // 断开连接处理
+  socket.on('end', () => {
+    console.log('❌ 客户端断开连接:', socket.remoteAddress)
+    clients.splice(clients.indexOf(socket), 1)
   })
+
+  // 错误处理
+  socket.on('error', (err) => {
+    console.error('TCP 连接错误:', err.message)
+  })
+})
+// echo data:60% | nc 172.20.10.12 3001 // 手机
+// echo data:60% | nc 192.168.0.2 3001 // 单片机
+// echo data:60% | nc 192.168.241.46 3001 // fs
+// 192.168.241.46
+// 启动 TCP 服务
+tcpServer.listen(TCP_PORT, '0.0.0.0', () => {
+  console.log(`🚀 TCP 服务已启动：tcp://0.0.0.0:${TCP_PORT}`)
 })

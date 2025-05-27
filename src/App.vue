@@ -23,16 +23,16 @@ const get = async () => {
   })
   console.log(res)
 }
-const ws = new WebSocket('ws://172.20.10.12:3000')
-
-ws.onopen = () => {
-  console.log('已连接到服务器')
-  ws.send('你好，我是客户端')
-}
-
-ws.onmessage = (event) => {
-  console.log('收到服务器消息:', JSON.parse(event.data))
-}
+// const ws = new WebSocket('ws://172.20.10.12:3000')
+//
+// ws.onopen = () => {
+//   console.log('已连接到服务器')
+//   ws.send('你好，我是客户端')
+// }
+//
+// ws.onmessage = (event) => {
+//   console.log('收到服务器消息:', JSON.parse(event.data))
+// }
 onMounted(async () => {
   // try {
   //   const res1 = await axios.get('/api/')
